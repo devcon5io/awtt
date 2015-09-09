@@ -1,4 +1,4 @@
-package js;
+package io.devcon5.examples.scripting.js;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
