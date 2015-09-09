@@ -1,4 +1,4 @@
-package io.devcon5.examples.scripting.js;
+package js;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
  * resource is loaded and evaluated.
  * Created by Gerald Mücke on 09.09.2015.
  */
-public class NashornExample {
+public class HelloWorld {
 
     public static void main(String... args) throws IOException, ScriptException {
 
@@ -26,7 +26,7 @@ public class NashornExample {
     private static InputStreamReader getScriptReader(String scriptName) {
 
         return new InputStreamReader(
-                NashornExample.class.getResourceAsStream(scriptName));
+                HelloWorld.class.getResourceAsStream(scriptName));
     }
 
 }

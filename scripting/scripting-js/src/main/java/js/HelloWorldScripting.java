@@ -1,4 +1,4 @@
-package io.devcon5.examples.scripting.js;
+package js;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -12,7 +12,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  * supports an expression syntax {@code ${expression}} inside strings that evalated.
  * Created by Gerald Mücke on 09.09.2015.
  */
-public class NashornScriptingModeExample {
+public class HelloWorldScripting {
 
     public static void main(String... args) throws IOException, ScriptException {
 
@@ -28,7 +28,7 @@ public class NashornScriptingModeExample {
     private static InputStreamReader getScriptReader(String scriptName) {
 
         return new InputStreamReader(
-                NashornScriptingModeExample.class.getResourceAsStream(scriptName));
+                HelloWorldScripting.class.getResourceAsStream(scriptName));
     }
 
 }
