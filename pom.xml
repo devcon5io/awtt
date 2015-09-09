@@ -11,6 +11,8 @@
     <description>Example projects for various java technologies.</description>
     <modules>
         <module>scripting</module>
+        <module>javafx</module>
+        <module>java8</module>
     </modules>
 
     <build>
