@@ -1,3 +1,3 @@
 function helloWorld() {
-    return "Hell of a world!";
+    return "Hell of a " + target + "!";
 }

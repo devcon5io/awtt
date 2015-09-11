@@ -30,7 +30,7 @@ public class MixinTest {
     @Test
     public void testAddJSMixin() throws Exception {
         //prepare
-        String o = "123";
+        String o = "world";
         URL script = getClass().getResource("/dynamicMixin.js");
 
         //act

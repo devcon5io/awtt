@@ -64,6 +64,7 @@ public class Mixin {
 
         final Set<Class> mixins = asList(mixinClasses).stream().collect(toSet());
         final ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+        engine.put("target", target);
         try(InputStreamReader reader = new InputStreamReader(script.openStream())){
             engine.eval(reader);
         }
