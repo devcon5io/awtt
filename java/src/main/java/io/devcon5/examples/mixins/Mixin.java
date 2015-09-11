@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -30,25 +29,34 @@ public class Mixin {
     }
 
 
-    private static Optional<Invocable> newInvocable(final Object target, final Collection<URL> scripts)  {
-
-        Invocable invocable = null;
-        if(scripts.isEmpty()){
-            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-            engine.put("target", target);
-            scripts.stream().forEach(u -> loadScript(engine, u));
-            invocable = (Invocable)engine;
-        }
-
-        return Optional.ofNullable(invocable);
-    }
-
     private static void loadScript(ScriptEngine engine, URL script){
         try(InputStreamReader reader = new InputStreamReader(script.openStream())){
             engine.eval(reader);
         } catch (IOException  | ScriptException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Object invoke(final Object target, final Method method, Object[] args){
+
+        try {
+            return method.invoke(target, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Invocable newInvocable(final Object target, final Collection<URL> scripts)  {
+
+        Invocable invocable = null;
+        if(!scripts.isEmpty()){
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            engine.put("target", target);
+            scripts.stream().forEach(u -> loadScript(engine, u));
+            invocable = (Invocable)engine;
+        }
+
+        return invocable;
     }
 
     /**
@@ -69,15 +77,6 @@ public class Mixin {
                                 .invokeWithArguments(args);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
-        }
-    }
-
-    private static Object invoke(final Object target, final Method method, Object[] args){
-
-        try {
-            return method.invoke(target, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -111,12 +110,12 @@ public class Mixin {
         private final List<Class> mixins;
         private final Set<URL> scripts = new HashSet<>();
 
-        public MixinBuilder(Class... mixinInterfaces){
+        private MixinBuilder(Class... mixinInterfaces){
             this.mixins = Arrays.asList(mixinInterfaces);
         }
 
-        public MixinBuilder withScript(URL scriptSource) {
-            this.scripts.add(scriptSource);
+        public MixinBuilder withScript(URL... scriptSource) {
+            this.scripts.addAll(Arrays.asList(scriptSource));
             return this;
         }
 
@@ -128,15 +127,15 @@ public class Mixin {
          *  the object with mixins
          */
         public Object to(Object target){
-            final Optional<Invocable> inv = newInvocable(target, this.scripts);
+            final Invocable inv = newInvocable(target, this.scripts);
 
             return newProxyInstance(Mixin.class.getClassLoader(), this.mixins.toArray(new Class[0]),
                                     (proxy, method,args) -> {
                 final Class<?> declaringClass = method.getDeclaringClass();
                 if (mixins.contains(declaringClass)) {
 
-                    if(inv.isPresent()){
-                        final Object scriptProxy = inv.get().getInterface(declaringClass);
+                    if(inv != null){
+                        final Object scriptProxy = inv.getInterface(declaringClass);
                         if (scriptProxy != null) {
                             return invoke(scriptProxy, method, args);
                         }
