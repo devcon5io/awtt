@@ -37,7 +37,7 @@ public class StreamsZipTest {
         data.put("test/simple.txt", "test".getBytes());
 
         //when
-        JNFZip.pack(zipFile.toPath(), data, "emptyFolder/");
+        StreamsZip.pack(zipFile.toPath(), data, "emptyFolder/");
 
         //then
         try(FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:" + zipFile.toURI()), emptyMap())) {
