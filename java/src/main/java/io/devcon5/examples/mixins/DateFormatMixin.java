@@ -1,4 +1,4 @@
-package io.devcon5.examples.java8.mixins;
+package io.devcon5.examples.mixins;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
