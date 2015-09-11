@@ -1,5 +1,6 @@
 package io.devcon5.examples.mixins;
 
+import static io.devcon5.examples.mixins.Mixin.addMixin;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URL;
@@ -18,7 +19,7 @@ public class MixinTest {
         String o = "123";
 
         //act
-        MyMixin mx = (MyMixin) Mixin.addMixin(o, MyMixin.class);
+        MyMixin mx = (MyMixin) addMixin(MyMixin.class).to(o);
         System.out.println(mx);
         System.out.println(mx.hello());
 
@@ -34,7 +35,7 @@ public class MixinTest {
         URL script = getClass().getResource("/dynamicMixin.js");
 
         //act
-        ScriptedMixin mx = (ScriptedMixin) Mixin.addMixin(o, script, ScriptedMixin.class);
+        ScriptedMixin mx = (ScriptedMixin) addMixin(ScriptedMixin.class).withScript(script).to(o);
         System.out.println(mx);
         System.out.println(mx.helloWorld());
         System.out.println(mx.badHabbitsDieHard());

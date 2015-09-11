@@ -1,8 +1,6 @@
 package io.devcon5.examples.mixins;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -13,7 +11,13 @@ import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,23 +25,60 @@ import java.util.Set;
  */
 public class Mixin {
 
-    public static Object addMixin(final Object target, Class... mixins) {
+    public static MixinBuilder addMixin(Class... mixins) {
+        return new MixinBuilder(mixins);
+    }
 
-        return newProxyInstance(Mixin.class.getClassLoader(),
-                                    mixins,
-                                    (proxy, method, args) -> {
-                                        if (method.isDefault()) {
 
-                                            final Class<?> declaringClass = method.getDeclaringClass();
+    private static Optional<Invocable> newInvocable(final Object target, final Collection<URL> scripts)  {
 
-                                            return lookupIn(declaringClass)
-                                                                .unreflectSpecial(method, declaringClass)
-                                                                .bindTo(proxy)
-                                                                .invokeWithArguments(args);
-                                        }
+        Invocable invocable = null;
+        if(scripts.isEmpty()){
+            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            engine.put("target", target);
+            scripts.stream().forEach(u -> loadScript(engine, u));
+            invocable = (Invocable)engine;
+        }
 
-                                        return method.invoke(target, args);
-                                    });
+        return Optional.ofNullable(invocable);
+    }
+
+    private static void loadScript(ScriptEngine engine, URL script){
+        try(InputStreamReader reader = new InputStreamReader(script.openStream())){
+            engine.eval(reader);
+        } catch (IOException  | ScriptException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Invokes a default method
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
+    private static Object invokeDefault(final Object proxy, final Method method, final Object[] args)  {
+
+        final Class<?> declaringClass = method.getDeclaringClass();
+        try {
+            return lookupIn(declaringClass)
+                                .unreflectSpecial(method, declaringClass)
+                                .bindTo(proxy)
+                                .invokeWithArguments(args);
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    private static Object invoke(final Object target, final Method method, Object[] args){
+
+        try {
+            return method.invoke(target, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -50,44 +91,62 @@ public class Mixin {
      * @throws InvocationTargetException
      * @throws InstantiationException
      */
-    private static MethodHandles.Lookup lookupIn(final Class<?> declaringClass)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(
-                Class.class,
-                int.class);
-        constructor.setAccessible(true);
-        return constructor.newInstance(declaringClass, MethodHandles.Lookup.PRIVATE);
+    private static MethodHandles.Lookup lookupIn(final Class<?> declaringClass){
+
+
+        try {
+            final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(
+                    Class.class,
+                    int.class);
+            constructor.setAccessible(true);
+            return constructor.newInstance(declaringClass, MethodHandles.Lookup.PRIVATE);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public static Object addMixin(final String target, final URL script, final Class... mixinClasses)
-            throws IOException, ScriptException {
+    public static class MixinBuilder {
 
-        final Set<Class> mixins = asList(mixinClasses).stream().collect(toSet());
-        final ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-        engine.put("target", target);
-        try(InputStreamReader reader = new InputStreamReader(script.openStream())){
-            engine.eval(reader);
+        private final List<Class> mixins;
+        private final Set<URL> scripts = new HashSet<>();
+
+        public MixinBuilder(Class... mixinInterfaces){
+            this.mixins = Arrays.asList(mixinInterfaces);
         }
-        final Invocable invocable = (Invocable) engine;
 
-        return newProxyInstance(Mixin.class.getClassLoader(),
-                                mixinClasses,
-                                (proxy, method, args) -> {
-                                    final Class<?> declaringClass = method.getDeclaringClass();
-                                    if (mixins.contains(declaringClass)) {
-                                        Object scriptProxy = invocable.getInterface(declaringClass);
-                                        if(scriptProxy != null) {
-                                            return method.invoke(scriptProxy, args);
-                                        }
-                                        if (method.isDefault()) {
-                                            return lookupIn(declaringClass)
-                                                    .unreflectSpecial(method, declaringClass)
-                                                    .bindTo(proxy)
-                                                    .invokeWithArguments(args);
-                                        }
-                                    }
-                                    return method.invoke(target, args);
-                                });
+        public MixinBuilder withScript(URL scriptSource) {
+            this.scripts.add(scriptSource);
+            return this;
+        }
 
+        /**
+         * Adds the mixins to the target object
+         * @param target
+         *  the target object for the mixins
+         * @return
+         *  the object with mixins
+         */
+        public Object to(Object target){
+            final Optional<Invocable> inv = newInvocable(target, this.scripts);
+
+            return newProxyInstance(Mixin.class.getClassLoader(), this.mixins.toArray(new Class[0]),
+                                    (proxy, method,args) -> {
+                final Class<?> declaringClass = method.getDeclaringClass();
+                if (mixins.contains(declaringClass)) {
+
+                    if(inv.isPresent()){
+                        final Object scriptProxy = inv.get().getInterface(declaringClass);
+                        if (scriptProxy != null) {
+                            return invoke(scriptProxy, method, args);
+                        }
+                        if (method.isDefault()) {
+                            return invokeDefault(proxy, method, args);
+                        }
+                    }
+                }
+                return invoke(target, method, args);
+            });
+        }
     }
 }
