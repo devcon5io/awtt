@@ -37,9 +37,11 @@ public class MixinTest {
         ScriptedMixin mx = (ScriptedMixin) Mixin.addMixin(o, script, ScriptedMixin.class);
         System.out.println(mx);
         System.out.println(mx.helloWorld());
+        System.out.println(mx.badHabbitsDieHard());
 
         //assert
         assertEquals("Hell of a world!", mx.helloWorld());
+        assertEquals("I do nasty stuff", mx.badHabbitsDieHard());
 
     }
 
@@ -53,7 +55,15 @@ public class MixinTest {
 
     public interface ScriptedMixin {
 
-        String helloWorld();
+        default String helloWorld() {
+            return "Hello world";
+        }
+
+
+
+        default String badHabbitsDieHard(){
+            return "I do nasty stuff";
+        }
 
     }
 
