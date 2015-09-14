@@ -7,17 +7,17 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Utility for adding mixins to instances at runtime. But not only default methods can be added but dynamic
@@ -128,13 +128,13 @@ public class Mixin {
      *
      * @return the invocable instance
      */
-    private static Invocable newInvocable(final Object target, final Collection<URL> scripts) {
+    private static Invocable newInvocable(final Object target, final Collection<Supplier<Reader>> scripts) {
 
         Invocable invocable = null;
         if (!scripts.isEmpty()) {
             final ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             engine.put("target", target);
-            scripts.stream().forEach(u -> loadScript(engine, u));
+            scripts.stream().forEach(script -> loadScript(engine, script));
             invocable = (Invocable) engine;
         }
 
@@ -146,16 +146,17 @@ public class Mixin {
      *
      * @param engine
      *         the engine that should evaluate the script
-     * @param script
+     * @param scriptReader
      *         the script source to be loaded into the script
      */
-    private static void loadScript(ScriptEngine engine, URL script) {
-        //TODO provide better and more resilient external source load mechanism
-        try (InputStreamReader reader = new InputStreamReader(script.openStream())) {
+    private static void loadScript(ScriptEngine engine, Supplier<Reader> scriptReader) {
+
+        try (Reader reader = scriptReader.get()){
             engine.eval(reader);
-        } catch (IOException | ScriptException e) {
+        } catch (ScriptException |IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     /**
@@ -164,7 +165,7 @@ public class Mixin {
     public static class OngoingMixinCreation {
 
         private final List<Class> mixins;
-        private final Set<URL> scripts = new HashSet<>();
+        private final Set<Supplier<Reader>> scripts = new HashSet<>();
 
         private OngoingMixinCreation(Class... mixinInterfaces) {
 
@@ -172,17 +173,17 @@ public class Mixin {
         }
 
         /**
-         * Adds the scrips from the specified sources to the mixin proxy. The scripts may provide methods that implement
-         * methods of the mixin interfaces.
+         * Adds reader suppliers for script sources. The suppliers provide a reader that is evaluated by the
+         * script engine in order to dynamicaly implement interfaces.
          *
          * @param scriptSource
-         *         the source of a javascript file to be added to the object
+         *         the source of a javascript  to be added to the object
          *
          * @return this builder
          */
-        public OngoingMixinCreation withScript(URL... scriptSource) {
-
+        public OngoingMixinCreation withScript(Supplier<Reader>... scriptSource) {
             this.scripts.addAll(Arrays.asList(scriptSource));
+
             return this;
         }
 
