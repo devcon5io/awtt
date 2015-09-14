@@ -20,24 +20,39 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Gerald Mücke on 11.09.2015.
+ * Utility for adding mixins to instances at runtime. But not only default methods can be added but dynamic
+ * implementations as well by providing a javascript based implementation for the methods. Created by Gerald MÃ¼cke on
+ * 11.09.2015.
  */
 public class Mixin {
 
-    public static MixinBuilder addMixin(Class... mixins) {
-        return new MixinBuilder(mixins);
+    /**
+     * Creates a builder for defining the mixin assignment. The builder can be applied to multiple objects
+     * using the {@code to()} method
+     * @param mixins
+     *  the mixin interfaces to be added
+     * @return
+     *  a builder for creating a mxin
+     */
+    public static OngoingMixinCreation addMixin(Class... mixins) {
+
+        return new OngoingMixinCreation(mixins);
     }
 
-
-    private static void loadScript(ScriptEngine engine, URL script){
-        try(InputStreamReader reader = new InputStreamReader(script.openStream())){
-            engine.eval(reader);
-        } catch (IOException  | ScriptException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Object invoke(final Object target, final Method method, Object[] args){
+    /**
+     * Invokes the specified method on the specified object and wrapping all exceptions in a RuntimeException.
+     *
+     * @param target
+     *  the target object on which the method should be invoked. May be null for static method invocation
+     * @param method
+     *  the method to be invoked
+     * @param args
+     *  the arguments to be passed to the method. May be empty
+     *
+     * @return
+     *  the result of the invocation
+     */
+    private static Object invoke(final Object target, final Method method, Object... args) {
 
         try {
             return method.invoke(target, args);
@@ -46,52 +61,48 @@ public class Mixin {
         }
     }
 
-    private static Invocable newInvocable(final Object target, final Collection<URL> scripts)  {
-
-        Invocable invocable = null;
-        if(!scripts.isEmpty()){
-            ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-            engine.put("target", target);
-            scripts.stream().forEach(u -> loadScript(engine, u));
-            invocable = (Invocable)engine;
-        }
-
-        return invocable;
-    }
-
     /**
-     * Invokes a default method
+     * Invokes a default method. Default methods are implemented in an interface which is overrided by applying the
+     * interface to the proxy. This method allows to invoke the default method on the proxy itselfs bypassing the
+     * overriden method.
+     *
      * @param proxy
+     *         the proxy object on which the method should be invoked
      * @param method
+     *         the method to be invoked
      * @param args
-     * @return
+     *         arguments that are passed to the method
+     *
+     * @return the return value of the invocation
+     *
      * @throws Throwable
      */
-    private static Object invokeDefault(final Object proxy, final Method method, final Object[] args)  {
+    private static Object invokeDefault(final Object proxy, final Method method, final Object[] args) {
 
         final Class<?> declaringClass = method.getDeclaringClass();
         try {
-            return lookupIn(declaringClass)
-                                .unreflectSpecial(method, declaringClass)
-                                .bindTo(proxy)
-                                .invokeWithArguments(args);
+            return lookupIn(declaringClass).unreflectSpecial(method, declaringClass)
+                                           .bindTo(proxy)
+                                           .invokeWithArguments(args);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
     }
 
     /**
-     * Creates a method lookup that is capable of accessing private members of declaring classes this Mixin factory
-     * has usually no access to.
+     * Creates a method lookup that is capable of accessing private members of declaring classes this Mixin factory has
+     * usually no access to.
+     *
      * @param declaringClass
+     *
      * @return
+     *
      * @throws NoSuchMethodException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      * @throws InstantiationException
      */
-    private static MethodHandles.Lookup lookupIn(final Class<?> declaringClass){
-
+    private static MethodHandles.Lookup lookupIn(final Class<?> declaringClass) {
 
         try {
             final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(
@@ -105,47 +116,141 @@ public class Mixin {
 
     }
 
-    public static class MixinBuilder {
+    /**
+     * Creates a new invocable proxy. The proxy may be used to create interface implementations that are implemented in
+     * javascript.
+     *
+     * @param target
+     *         the target object that is passed into the scripting context so that the methods in the script may access
+     *         the target object.
+     * @param scripts
+     *         scripts to be loaded into the engine
+     *
+     * @return the invocable instance
+     */
+    private static Invocable newInvocable(final Object target, final Collection<URL> scripts) {
+
+        Invocable invocable = null;
+        if (!scripts.isEmpty()) {
+            final ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+            engine.put("target", target);
+            scripts.stream().forEach(u -> loadScript(engine, u));
+            invocable = (Invocable) engine;
+        }
+
+        return invocable;
+    }
+
+    /**
+     * Loads a single script from an URL into the script engine
+     *
+     * @param engine
+     *         the engine that should evaluate the script
+     * @param script
+     *         the script source to be loaded into the script
+     */
+    private static void loadScript(ScriptEngine engine, URL script) {
+        //TODO provide better and more resilient external source load mechanism
+        try (InputStreamReader reader = new InputStreamReader(script.openStream())) {
+            engine.eval(reader);
+        } catch (IOException | ScriptException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Builder to create a mixin
+     */
+    public static class OngoingMixinCreation {
 
         private final List<Class> mixins;
         private final Set<URL> scripts = new HashSet<>();
 
-        private MixinBuilder(Class... mixinInterfaces){
+        private OngoingMixinCreation(Class... mixinInterfaces) {
+
             this.mixins = Arrays.asList(mixinInterfaces);
         }
 
-        public MixinBuilder withScript(URL... scriptSource) {
+        /**
+         * Adds the scrips from the specified sources to the mixin proxy. The scripts may provide methods that implement
+         * methods of the mixin interfaces.
+         *
+         * @param scriptSource
+         *         the source of a javascript file to be added to the object
+         *
+         * @return this builder
+         */
+        public OngoingMixinCreation withScript(URL... scriptSource) {
+
             this.scripts.addAll(Arrays.asList(scriptSource));
             return this;
         }
 
         /**
-         * Adds the mixins to the target object
+         * Adds the mixins to the target object. The method can be invoked on different objects creating a new proxy for
+         * each.
+         *
          * @param target
-         *  the target object for the mixins
-         * @return
-         *  the object with mixins
+         *         the target object for the mixins
+         *
+         * @return the object with mixins
          */
-        public Object to(Object target){
+        public Object to(Object target) {
+
             final Invocable inv = newInvocable(target, this.scripts);
 
-            return newProxyInstance(Mixin.class.getClassLoader(), this.mixins.toArray(new Class[0]),
-                                    (proxy, method,args) -> {
-                final Class<?> declaringClass = method.getDeclaringClass();
-                if (mixins.contains(declaringClass)) {
+            return newProxyInstance(Mixin.class.getClassLoader(),
+                                    this.mixins.toArray(new Class[0]),
+                                    (proxy, method, args) -> handleInvocation(target,
+                                                                              proxy,
+                                                                              mixins,
+                                                                              inv,
+                                                                              method,
+                                                                              args));
+        }
 
-                    if(inv != null){
-                        final Object scriptProxy = inv.getInterface(declaringClass);
-                        if (scriptProxy != null) {
-                            return invoke(scriptProxy, method, args);
-                        }
-                        if (method.isDefault()) {
-                            return invokeDefault(proxy, method, args);
-                        }
+        /**
+         * Performs the dynamic resolution of default and script-implemented-methods. The order of execution is <ol>
+         * <li>script implemented method (if found)</li> <li>implemented method</li> <li>default method</li> </ol>
+         *
+         * @param target
+         *         the target object
+         * @param proxy
+         *         the mxing proxy
+         * @param mixins
+         *         list of mixin interface classes
+         * @param inv
+         *         the invocable script engine
+         * @param method
+         *         the method to be invoked
+         * @param args
+         *         the arguments to be passed to the method
+         *
+         * @return
+         */
+        private static Object handleInvocation(final Object target,
+                                               final Object proxy,
+                                               final List<Class> mixins,
+                                               final Invocable inv,
+                                               final Method method,
+                                               final Object[] args) {
+
+            Class<?> declaringClass = method.getDeclaringClass();
+            //check if the method is only provided by one of the mixins. In that case we invoke either
+            //the scripted or the default implementation.
+            //if the method has been declared by the target object's class, neither will be done.
+            if (mixins.contains(declaringClass)) {
+                if (inv != null) {
+                    final Object scriptProxy = inv.getInterface(declaringClass);
+                    if (scriptProxy != null) {
+                        return invoke(scriptProxy, method, args);
                     }
                 }
-                return invoke(target, method, args);
-            });
+                if (method.isDefault()) {
+                    return invokeDefault(proxy, method, args);
+                }
+            }
+            return invoke(target, method, args);
         }
     }
 }
