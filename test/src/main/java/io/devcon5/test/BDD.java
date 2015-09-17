@@ -13,6 +13,15 @@ public class BDD {
     private BDD() {
     }
 
+    /**
+     * Creates a precondition for a behavior-driven test. The supplier creates the subject under test.
+     * @param precondition
+     *  the precondition definition providing the prepared subject-under-test
+     * @param <PRECONDITION>
+     *  the type of the subject-under-test
+     * @return
+     *  a precondition handler for defining the action to perform
+     */
     public static <PRECONDITION> PreconditionHandler<PRECONDITION> given(Supplier<PRECONDITION> precondition) {
         return new PreconditionHandler<>(precondition);
     }
@@ -24,13 +33,22 @@ public class BDD {
             this.precondition = precondition;
         }
 
+        /**
+         * Creates an action handler execution the action statement. The action function performing the
+         * activity-under-test.
+         * @param action
+         *  the action function mapping the prepared subject-under-test creating a testable result.
+         * @param <RESULT>
+         *  the type of the outcome of the action to be verified.
+         * @return
+         *  an action handler for defining the post condition or test.
+         */
         public <RESULT> ActionHandler<PRECONDITION, RESULT> when(Function<PRECONDITION, RESULT> action) {
             return new ActionHandler<>(precondition, action);
         }
     }
 
     public static class ActionHandler<PRECONDITION, RESULT> {
-
 
         private final Supplier<PRECONDITION> precondition;
         private final Function<PRECONDITION, RESULT> action;
@@ -40,6 +58,11 @@ public class BDD {
             this.action = action;
         }
 
+        /**
+         * Defines the post-condition containing testing the outcome of the activity-under-test
+         * @param consequence
+         *  the activities to perform the assertions to test the result.
+         */
         public void then(Predicate<RESULT> consequence) {
             if (!consequence.test(action.apply(precondition.get()))) {
                 throw new AssertionError("Test failed");

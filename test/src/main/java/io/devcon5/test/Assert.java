@@ -4,7 +4,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Simple io.devcon5.test.BDD-style test builder based on lambda expressions.
+ * Simple helper to define assertions.
  * Created by m4g on 17.09.2015.
  */
 public class Assert {
