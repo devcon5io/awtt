@@ -12,9 +12,9 @@
     <modules>
         <module>scripting</module>
         <module>javafx</module>
-        <module>java8</module>
-        <module>java7</module>
         <module>java</module>
+        <module>javax-el</module>
+        <module>test</module>
     </modules>
 
     <dependencies>
