@@ -27,12 +27,13 @@ import java.util.function.Supplier;
 public class Mixin {
 
     /**
-     * Creates a builder for defining the mixin assignment. The builder can be applied to multiple objects
-     * using the {@code to()} method
+     * Creates a builder for defining the mixin assignment. The builder can be applied to multiple objects using the
+     * {@code to()} method
+     *
      * @param mixins
-     *  the mixin interfaces to be added
-     * @return
-     *  a builder for creating a mxin
+     *         the mixin interfaces to be added
+     *
+     * @return a builder for creating a mxin
      */
     public static OngoingMixinCreation addMixin(Class... mixins) {
 
@@ -43,14 +44,13 @@ public class Mixin {
      * Invokes the specified method on the specified object and wrapping all exceptions in a RuntimeException.
      *
      * @param target
-     *  the target object on which the method should be invoked. May be null for static method invocation
+     *         the target object on which the method should be invoked. May be null for static method invocation
      * @param method
-     *  the method to be invoked
+     *         the method to be invoked
      * @param args
-     *  the arguments to be passed to the method. May be empty
+     *         the arguments to be passed to the method. May be empty
      *
-     * @return
-     *  the result of the invocation
+     * @return the result of the invocation
      */
     private static Object invoke(final Object target, final Method method, Object... args) {
 
@@ -151,9 +151,9 @@ public class Mixin {
      */
     private static void loadScript(ScriptEngine engine, Supplier<Reader> scriptReader) {
 
-        try (Reader reader = scriptReader.get()){
+        try (Reader reader = scriptReader.get()) {
             engine.eval(reader);
-        } catch (ScriptException |IOException e) {
+        } catch (ScriptException | IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -173,8 +173,8 @@ public class Mixin {
         }
 
         /**
-         * Adds reader suppliers for script sources. The suppliers provide a reader that is evaluated by the
-         * script engine in order to dynamicaly implement interfaces.
+         * Adds reader suppliers for script sources. The suppliers provide a reader that is evaluated by the script
+         * engine in order to dynamicaly implement interfaces.
          *
          * @param scriptSource
          *         the source of a javascript  to be added to the object
@@ -182,6 +182,7 @@ public class Mixin {
          * @return this builder
          */
         public OngoingMixinCreation withScript(Supplier<Reader>... scriptSource) {
+
             this.scripts.addAll(Arrays.asList(scriptSource));
 
             return this;
@@ -199,6 +200,7 @@ public class Mixin {
         public Object to(Object target) {
 
             final Invocable inv = newInvocable(target, this.scripts);
+            //TODO add detection of proxied objects
 
             return newProxyInstance(Mixin.class.getClassLoader(),
                                     this.mixins.toArray(new Class[0]),

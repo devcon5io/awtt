@@ -34,8 +34,6 @@ public class MixinTest {
         //prepare
         String o = "world";
 
-        Reader reader = createResourceReader("/dynamicMixin.js");
-
         //act
         ScriptedMixin mx = (ScriptedMixin) addMixin(ScriptedMixin.class).withScript(() -> createResourceReader(
                 "/dynamicMixin.js")).to(o);
