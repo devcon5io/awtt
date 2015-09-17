@@ -12,3 +12,6 @@
 hs_err_pid*
 .idea/
 *.iml
+java/target/
+javafx/javafx-helloworld/target/
+scripting/scripting-js/target/
