@@ -1,8 +1,9 @@
-package io.devcon5.examples.zip;
+package io.devcon5.zip;
 
 import static java.nio.file.FileSystems.newFileSystem;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.write;
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,12 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This example demonstrates how to operate on zip files using the java.nio.files api. This approach allows to
- * operate on zip files without unpacking them and any utility written for the file api can be used to modify
- * zip content as well
  * Created by Gerald Mücke on 11.09.2015.
  */
-public class JNFZip {
+public class StreamsZip {
 
     public static void pack(Path zipFile, Map<String, byte[]> data, String... emptyFolders) throws IOException {
 
@@ -26,14 +24,25 @@ public class JNFZip {
         }};
 
         try(FileSystem zipFs = newFileSystem(URI.create("jar:" + zipFile.toUri()), env)) {
-            for(String path : emptyFolders){
-                createDirectories(zipFs.getPath(path));
-            }
-            for(Map.Entry<String, byte[]> entry : data.entrySet()){
-                Path entryPath = zipFs.getPath(entry.getKey());
-                createDirectories(entryPath.getParent());
-                write(entryPath, entry.getValue());
-            }
+            asList(emptyFolders).stream().map(zipFs::getPath).forEach(StreamsZip::createDirs);
+            data.forEach((name, b) -> createFile(zipFs.getPath(name), b));
+        }
+    }
+
+    static void createFile(Path path,  byte[] data) {
+        try {
+            createDirs(path.getParent());
+            write(path, data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void createDirs(Path path) {
+        try {
+            createDirectories(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

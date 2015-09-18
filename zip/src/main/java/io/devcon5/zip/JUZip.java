@@ -1,4 +1,4 @@
-package io.devcon5.examples.zip;
+package io.devcon5.zip;
 
 import java.io.File;
 import java.io.FileOutputStream;

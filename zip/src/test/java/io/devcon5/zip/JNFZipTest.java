@@ -1,4 +1,4 @@
-package io.devcon5.examples.zip;
+package io.devcon5.zip;
 
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.isDirectory;

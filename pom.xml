@@ -16,6 +16,7 @@
         <module>javax-el</module>
         <module>test</module>
         <module>mixin</module>
+        <module>zip</module>
     </modules>
 
     <dependencies>
