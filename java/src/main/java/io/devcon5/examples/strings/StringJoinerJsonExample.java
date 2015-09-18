@@ -23,7 +23,7 @@ public class StringJoinerJsonExample {
         String jsonString = newJsonObject().add(newProperty("propertyA", value("aValue")))
                                            .add(newProperty("propertyB", value("bValue")))
                                            .add(newProperty("aArray",
-                                                            newJsonArray().add(value("a")).add(value("b")).toString()))
+                                                            value(newJsonArray().add(value("a")).add(value("b")))))
                                            .toString();
 
         System.out.println(jsonString);
