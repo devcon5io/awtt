@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 /**
  * Simple BDD-style test builder based on lambda expressions.
- * Created by m4g on 17.09.2015.
+ * Created by Gerald M&uuml;cke on 17.09.2015.
  */
 public class BDD {
 

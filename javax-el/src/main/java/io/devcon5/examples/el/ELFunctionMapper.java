@@ -11,7 +11,7 @@ import javax.el.FunctionMapper;
 
 /**
  * Simple implementation of mapping static functions.
- * Created by m4g on 17.09.2015.
+ * Created by Gerald M&uuml;cke on 17.09.2015.
  */
 class ELFunctionMapper extends FunctionMapper {
     private final Map<String, Method> functionMap = new HashMap<String, Method>();

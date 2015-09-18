@@ -7,7 +7,7 @@ import javax.el.VariableMapper;
 
 /**
  * Simple Variable mapper, mapping variable names to ValueExpressions.
- * Created by m4g on 17.09.2015.
+ * Created by Gerald M&uuml;cke on 17.09.2015.
  */
 class ELVariableMapper extends VariableMapper {
 

@@ -5,7 +5,7 @@ import static io.devcon5.test.BDD.given;
 import org.junit.Test;
 
 /**
- * Created by m4g on 17.09.2015.
+ * Created by Gerald M&uuml;cke on 17.09.2015.
  */
 public class BDDTest {
 

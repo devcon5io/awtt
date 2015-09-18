@@ -5,7 +5,7 @@ import java.util.function.UnaryOperator;
 
 /**
  * Simple helper to define assertions.
- * Created by m4g on 17.09.2015.
+ * Created by Gerald M&uuml;cke on 17.09.2015.
  */
 public class Assert {
 
