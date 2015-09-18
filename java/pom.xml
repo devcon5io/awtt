@@ -12,5 +12,12 @@
     <artifactId>java</artifactId>
     <description>Various Examples from field problems implementd with standard JDK means.</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+    </dependencies>
 
 </project>
