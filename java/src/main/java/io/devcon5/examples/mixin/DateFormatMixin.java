@@ -1,4 +1,4 @@
-package io.devcon5.examples.mixins;
+package io.devcon5.examples.mixin;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +16,7 @@ public interface DateFormatMixin {
 
     /**
      * Default Method that is present on all instances implementing this interface
+     *
      * @return
      */
     default String getFormattedDate() {
@@ -26,12 +27,12 @@ public interface DateFormatMixin {
 
     /**
      * Default method to return the date.
-     * @return
-     * If the implementing class is of type date, it is returned, otherwise
+     *
+     * @return If the implementing class is of type date, it is returned, otherwise
      * the current date is returned.
      */
-    default  Date getThisDate() {
-        if(this instanceof Date) {
+    default Date getThisDate() {
+        if (this instanceof Date) {
             return (Date) this;
         } else {
             return new Date();

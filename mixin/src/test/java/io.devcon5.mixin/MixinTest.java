@@ -1,11 +1,10 @@
-package io.devcon5.examples.mixins;
+package io.devcon5.mixin;
 
-import static io.devcon5.examples.mixins.Mixin.addMixin;
+import static io.devcon5.mixin.Mixin.addMixin;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-
 import org.junit.Test;
 
 /**

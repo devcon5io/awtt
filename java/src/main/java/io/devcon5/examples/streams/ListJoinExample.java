@@ -22,16 +22,13 @@ public class ListJoinExample {
 
     /**
      * Joins two collections into one collection containing all elements.
-     * @param element
-     *  the collections of elements to join into one
-     * @param <C>
-     *      type of the collection
-     * @param <E>
-     *      type of the collection's elements
-     * @return
-     *  a list containing all elements
+     *
+     * @param element the collections of elements to join into one
+     * @param <C>     type of the collection
+     * @param <E>     type of the collection's elements
+     * @return a list containing all elements
      */
-    public static <C, E extends Collection<C>> List<C> join(E... element){
+    public static <C, E extends Collection<C>> List<C> join(E... element) {
         return stream(element).flatMap(Collection::stream).collect(toList());
     }
 
