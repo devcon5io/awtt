@@ -1,18 +1,28 @@
-package io.devcon5.examples.el;
+package io.devcon5.el;
 
-import javax.el.*;
 import java.lang.reflect.Method;
+import javax.el.ArrayELResolver;
+import javax.el.BeanELResolver;
+import javax.el.CompositeELResolver;
+import javax.el.ELContext;
+import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
+import javax.el.FunctionMapper;
+import javax.el.ListELResolver;
+import javax.el.MapELResolver;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 
 /**
  * Created by Gerald M&uuml;cke on 17.09.2015.
  */
-class ExampleELContext extends ELContext {
+class SimpleELContext extends ELContext {
     private final CompositeELResolver compositeELResolver;
     private final ELFunctionMapper functionMapper;
     private final VariableMapper variableMapper;
     private final ExpressionFactory expressionFactory;
 
-    public ExampleELContext() {
+    public SimpleELContext() {
         this.compositeELResolver = new CompositeELResolver();
         this.compositeELResolver.add(new ArrayELResolver());
         this.compositeELResolver.add(new ListELResolver());
@@ -27,7 +37,7 @@ class ExampleELContext extends ELContext {
         getVariableMapper().setVariable(name, expressionFactory.createValueExpression(value, value.getClass()));
     }
 
-    public void addMethod(String prefix, Method method){
+    public void addMethod(String prefix, Method method) {
         getFunctionMapper().mapFunction(prefix, method.getName(), method);
     }
 

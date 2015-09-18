@@ -1,4 +1,4 @@
-package io.devcon5.examples.el;
+package io.devcon5.el;
 
 import java.util.HashMap;
 import java.util.Map;

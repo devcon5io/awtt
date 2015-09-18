@@ -1,4 +1,4 @@
-package io.devcon5.examples.el;
+package io.devcon5.el;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,13 +8,13 @@ import org.junit.Test;
 /**
  * Created by Gerald Mücke on 18.09.2015.
  */
-public class ExampleELContextTest {
+public class SimpleELContextTest {
 
-    private ExampleELContext context;
+    private SimpleELContext context;
 
     @Before
     public void setUp() throws Exception {
-        this.context = new ExampleELContext();
+        this.context = new SimpleELContext();
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ExampleELContextTest {
     public void test_resolved_function() throws Exception {
         //prepare
         String aValue = "${t:aMethod()}";
-        context.addMethod("t", ExampleELContextTest.class.getMethod("aMethod"));
+        context.addMethod("t", SimpleELContextTest.class.getMethod("aMethod"));
 
         //act
         final String result = context.eval(aValue);
@@ -57,7 +57,7 @@ public class ExampleELContextTest {
 
     }
 
-    public static String aMethod(){
+    public static String aMethod() {
         return "METHOD TEST";
     }
 }

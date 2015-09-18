@@ -1,4 +1,4 @@
-package io.devcon5.examples.el;
+package io.devcon5.el;
 
 import static io.devcon5.test.Assert.assertThat;
 import static java.lang.reflect.Modifier.isPublic;
@@ -21,7 +21,8 @@ class ELFunctionMapper extends FunctionMapper {
         return functionMap.get(prefix + ":" + localName);
     }
 
-    public void addFunction(final String prefix, final String localName, final Method method) {
+    @Override
+    public void mapFunction(final String prefix, final String localName, final Method method) {
         assertThat(method).fulfills(m ->
                         isPublic(m.getModifiers())
                                 && isStatic(m.getModifiers())
