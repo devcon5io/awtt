@@ -5,14 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.devcon5</groupId>
-    <artifactId>examples</artifactId>
+    <artifactId>awtt</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <description>Example projects for various java technologies.</description>
+    <description>Assemble with Tinker Toys is a project for collecting small tools, utilities, tech-demos and examples
+        from field projects and from practicing.
+        .</description>
     <modules>
+        <module>misc</module>
         <module>scripting</module>
         <module>javafx</module>
-        <module>java</module>
         <module>javax-el</module>
         <module>test</module>
         <module>mixin</module>
