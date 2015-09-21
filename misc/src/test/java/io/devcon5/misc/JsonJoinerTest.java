@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package io.devcon5.misc.strings;
+package io.devcon5.misc;
 
+import static io.devcon5.misc.JsonJoiner.$;
+import static io.devcon5.misc.JsonJoiner.array;
+import static io.devcon5.misc.JsonJoiner.object;
+import static io.devcon5.misc.JsonJoiner.property;
 import static org.junit.Assert.assertEquals;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.io.StringReader;
-import java.util.StringJoiner;
 
 import org.junit.Test;
 
 /**
- * Created by Gerald Mücke on 18.09.2015.
+ * Created by Gerald Mücke on 21.09.2015.
  */
-public class StringJoinerJsonExample {
+public class JsonJoinerTest {
 
     @Test
     public void test_createJson() throws Exception {
         //prepare
 
         //act
-        String jsonString = newJsonObject().add(newProperty("propertyA", value("aValue")))
-                                           .add(newProperty("propertyB", value("bValue")))
-                                           .add(newProperty("aArray",
-                                                            value(newJsonArray().add(value("a")).add(value("b")))))
-                                           .toString();
+        String jsonString = object().add(property("propertyA", $("aValue")))
+                                    .add(property("propertyB", $("bValue")))
+                                    .add(property("aArray", $(array().add($("a")).add($("b")))))
+                                    .toString();
 
         System.out.println(jsonString);
 
@@ -54,31 +56,4 @@ public class StringJoinerJsonExample {
         assertEquals("b", array.getString(1));
 
     }
-
-    public static StringJoiner newJsonObject() {
-
-        return new StringJoiner(",", "{", "}");
-    }
-
-    public static StringJoiner newJsonArray() {
-
-        return new StringJoiner(",", "[", "]");
-    }
-
-    public static String newProperty(String name, CharSequence value) {
-
-        return new StringJoiner(":").add("\"" + name + "\"").add(value).toString();
-    }
-
-    public static CharSequence value(final Object value) {
-
-        if (value == null) {
-            return "null";
-        }
-        if (value instanceof String) {
-            return "\"" + value + "\"";
-        }
-        return value.toString();
-    }
-
 }

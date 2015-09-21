@@ -36,7 +36,7 @@ public class InitializerTest {
     @Test
     public void double_brace_initialization() throws Exception {
         //prepare
-        Collection<String> col = new ArrayList<String>(){{
+        Collection<String> col = new ArrayList<String>() {{
             add("one");
             add("two");
         }};
@@ -56,14 +56,16 @@ public class InitializerTest {
         //prepare
         Collection target = new ArrayList<>();
         //act
-        Collection<String> col = init(target, c -> { c.add("one"); c.add("two");});
+        Collection col = init(target, c -> {
+            c.add("one");
+            c.add("two");
+        });
 
         //assert
         assertNotNull(col);
         assertEquals(2, col.size());
         assertTrue(col.contains("one"));
         assertTrue(col.contains("two"));
-
 
     }
 
@@ -73,7 +75,7 @@ public class InitializerTest {
         Map<String, String> target = new HashMap<>();
 
         //act
-        Map<String,String> map = init(target   , m -> m.put("test", "value"));
+        Map<String, String> map = init(target, m -> m.put("test", "value"));
 
         //assert
         assertNotNull(map);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.devcon5.misc.mixin;
+package io.devcon5.misc.mixins;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

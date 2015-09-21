@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package io.devcon5.misc.streams;
+package io.devcon5.misc;
 
-import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -27,14 +26,8 @@ import java.util.List;
  * Examples for joining lists of items into one
  * Created by Gerald Mücke on 14.09.2015.
  */
-public class ListJoinExample {
+public class Collections {
 
-    public static void main(String... args) {
-
-        List<List<String>> list1 = asList(asList("1", "2"), asList("3"), asList("4", "5"));
-        List<List<String>> list2 = asList(asList("a", "b"), asList("c"), asList("d", "e"));
-        System.out.println(join(list1, list2));
-    }
 
     /**
      * Joins two collections into one collection containing all elements.
