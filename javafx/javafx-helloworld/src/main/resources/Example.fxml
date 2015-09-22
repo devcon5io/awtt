@@ -3,7 +3,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 
-
 <!--
   ~ Copyright 2015 DevCon5 GmbH, info@devcon5.io
   ~
@@ -20,8 +19,8 @@
   ~ limitations under the License.
   -->
 
-<TitledPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1">
-   <content>
-      <Button mnemonicParsing="false" text="Button" />
-   </content>
+<TitledPane collapsible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" text="Test" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.devcon5.fx.helloworld.FxmlHelloWorldController">
+   <graphic>
+      <Button fx:id="button" mnemonicParsing="false" onAction="#doSomething" text="OK" />
+   </graphic>
 </TitledPane>

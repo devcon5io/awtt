@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.devcon5.misc.fx.helloworld;
+package io.devcon5.fx.helloworld;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
