@@ -21,21 +21,23 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 /**
- * This simple example shows, how the java-provided javascript engine is created and a script from an external
- * resource is loaded and evaluated.
- * Created by Gerald Mücke on 09.09.2015.
+ * An example showing how to redirect outputs to another writer
+ * Created by Gerald Mücke on 24.09.2015.
  */
-public class HelloWorld {
+public class RedirectOutputExample {
 
     public static void main(String... args) throws IOException, ScriptException {
 
         final ScriptEngine engine =  new ScriptEngineManager().getEngineByName("javascript");
 
-        try(InputStreamReader reader = getScriptReader("/helloworld.js")) {
+        try(InputStreamReader reader = getScriptReader("/helloworld.js"); StringWriter writer = new StringWriter()) {
+            engine.getContext().setWriter(writer);
             engine.put("name", "Bob");
             engine.eval(reader);
+            System.out.println("OUTPUT " + writer.toString() );
         }
     }
 
@@ -44,5 +46,6 @@ public class HelloWorld {
         return new InputStreamReader(
                 HelloWorld.class.getResourceAsStream(scriptName));
     }
+
 
 }
