@@ -27,7 +27,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  * Example for how to limit the classes accessible in the scripting engine
  * Created by Gerald Mücke on 24.09.2015.
  */
-public class SandboxScripting {
+public class ClassFilterSandboxScripting {
     public static void main(String... args) throws IOException, ScriptException {
 
         final NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
