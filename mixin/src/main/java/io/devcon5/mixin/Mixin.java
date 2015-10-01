@@ -18,6 +18,10 @@ package io.devcon5.mixin;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.invoke.MethodHandles;
@@ -28,12 +32,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 /**
  * Utility for adding mixins to instances at runtime. But not only default methods can be added but dynamic
@@ -128,14 +129,16 @@ public class Mixin {
      * @param scripts scripts to be loaded into the engine
      * @return the invocable instance
      */
-    private static Invocable newInvocable(final Object target, final Collection<Supplier<Reader>> scripts) {
+    private static Optional<Invocable> newInvocable(final Object target, final Collection<Supplier<Reader>> scripts) {
 
-        Invocable invocable = null;
+        Optional<Invocable> invocable;
         if (!scripts.isEmpty()) {
             final ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             engine.put("target", target);
             scripts.stream().forEach(script -> loadScript(engine, script));
-            invocable = (Invocable) engine;
+            invocable = Optional.of((Invocable) engine);
+        } else {
+            invocable = Optional.empty();
         }
 
         return invocable;
@@ -193,8 +196,7 @@ public class Mixin {
          */
         public Object to(Object target) {
 
-            final Invocable inv = newInvocable(target, this.scripts);
-            //TODO add detection of proxied objects
+            final Optional<Invocable> inv = newInvocable(target, this.scripts);
 
             return newProxyInstance(Mixin.class.getClassLoader(),
                     this.mixins.toArray(new Class[0]),
@@ -221,20 +223,16 @@ public class Mixin {
         private static Object handleInvocation(final Object target,
                                                final Object proxy,
                                                final List<Class> mixins,
-                                               final Invocable inv,
+                                               final Optional<Invocable> inv,
                                                final Method method,
                                                final Object[] args) {
 
-            Class<?> declaringClass = method.getDeclaringClass();
-            //check if the method is only provided by one of the mixins. In that case we invoke either
-            //the scripted or the default implementation.
-            //if the method has been declared by the target object's class, neither will be done.
+            Class declaringClass = method.getDeclaringClass();
             if (mixins.contains(declaringClass)) {
-                if (inv != null) {
-                    final Object scriptProxy = inv.getInterface(declaringClass);
-                    if (scriptProxy != null) {
-                        return invoke(scriptProxy, method, args);
-                    }
+                final Optional<Object> result = inv.map(invocable -> invocable.getInterface(declaringClass))
+                                                   .map(scriptProxy -> invoke(scriptProxy, method, args));
+                if(result.isPresent()){
+                    return result.get();
                 }
                 if (method.isDefault()) {
                     return invokeDefault(proxy, method, args);
