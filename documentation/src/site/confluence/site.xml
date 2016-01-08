@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 DevCon5 GmbH, info@devcon5.io
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<bsc:site
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns:bsc='https://github.com/bsorrentino/maven-confluence-plugin'
+        xsi:schemaLocation='https://github.com/bsorrentino/maven-confluence-plugin https://raw.githubusercontent.com/bsorrentino/maven-confluence-plugin/master/schemas/site-schema-3.4.0.xsd'>
+
+    <home name="About" uri="../markdown/about.md">
+        <child name="Diagrams" uri="../markdown/diagrams.md">
+            <attachment name="diagrams.png"  uri="../../../target/site/images/diagrams.png"/>
+        </child>
+        <child name="Images" uri="../markdown/images.md">
+            <attachment name="image.png" uri="../../../target/site/images/image.png"/>
+        </child>
+    </home>
+
+
+    <label>documentation</label>
+    <label>generated</label>
+
+</bsc:site>

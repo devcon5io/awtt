@@ -1,0 +1,19 @@
+@startuml
+artifact "documentation.md" as doc
+artifact "diagram.puml" as puml
+artifact "image.svg" as svg
+doc *--> puml
+doc *--> svg
+
+artifact "diagram.png" as ppng
+artifact "image.png" as spng
+
+puml ..> ppng : maven-plantuml-plugin
+svg ..> spng : batik-maven-plugin
+
+[confluence]
+ppng ..> confluence : maven-confluence-plugin
+spng ..> confluence : maven-confluence-plugin
+doc ..> confluence : maven-confluence-plugin/\ndoxia-module-markdown
+
+@enduml

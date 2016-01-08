@@ -35,6 +35,7 @@
         <module>test</module>
         <module>mixin</module>
         <module>zip</module>
+        <module>documentation</module>
     </modules>
 
     <dependencies>
