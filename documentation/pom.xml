@@ -136,10 +136,10 @@
                             </goal>
                         </goals>
                         <configuration>
-                            <serverId>sites.scribble.confluence</serverId>
-                            <endPoint>https://inkstand.atlassian.net/wiki/rpc/xmlrpc</endPoint>
+                            <serverId>yoursite.confluence</serverId>
+                            <endPoint>https://your.confluence.host/path-to-wiki/rpc/xmlrpc</endPoint>
                             <spaceKey>TEST</spaceKey>
-                            <parentPageTitle>TEST Home</parentPageTitle>
+                            <parentPageTitle>Example Home</parentPageTitle>
                             <title>Example</title>
                         </configuration>
                     </execution>
