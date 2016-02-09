@@ -26,7 +26,8 @@
     <version>1.0-SNAPSHOT</version>
     <description>Assemble with Tinker Toys is a project for collecting small tools, utilities, tech-demos and examples
         from field projects and from practicing.
-        .</description>
+        .
+    </description>
     <modules>
         <module>misc</module>
         <module>scripting</module>
@@ -36,6 +37,7 @@
         <module>mixin</module>
         <module>zip</module>
         <module>documentation</module>
+        <module>javascript</module>
     </modules>
 
     <dependencies>
