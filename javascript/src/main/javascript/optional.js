@@ -88,7 +88,7 @@ var Optional = {
              * @param mapperFunction
              *  the mapping function used to map the value. The function must accept a single parameter (the value)
              * @returns {*}
-             *  an optional of the mapped value
+             *  an optional of the mapped value or the empty optional if the value is null or undefined
              */
             map: function (mapperFunction) {
                 if (nullOrUndefined(value)) {
@@ -105,11 +105,7 @@ var Optional = {
              *  the mapped value
              */
             flatMap: function (mapperFunction) {
-                if (nullOrUndefined(value)) {
-                    return Optional.EMPTY;
-                } else {
-                    return mapperFunction(value);
-                }
+                return mapperFunction(value);
             }
         }
     }
