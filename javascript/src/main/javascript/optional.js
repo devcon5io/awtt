@@ -20,14 +20,6 @@
  * @type {{EMPTY: Object, empty: Optional.empty, of: Optional.of}}
  */
 var Optional = {
-    EMPTY: Object.freeze(of(null)),
-    /**
-     * An empty optional
-     * @returns {*}
-     */
-    empty: function () {
-        return EMPTY;
-    },
     /**
      * Creates an optional of the specified value. The value may be undefined or null.
      * @param value
@@ -123,5 +115,14 @@ var Optional = {
                 return mapperFunction(value);
             }
         }
-    }
+    },
+    /**
+     * An empty optional
+     * @returns {*}
+     */
+    empty: function () {
+        return Optional.EMPTY;
+    },
 }
+Optional.EMPTY = Object.freeze(Optional.of(null));
+
