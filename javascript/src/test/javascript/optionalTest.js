@@ -23,9 +23,7 @@ var assert = function (func) {
 
 /*Setup*/
 
-var subject = {
-    field1: "value"
-}
+var defined = "value";
 
 function mapFunction(value) {
     if (value === "value") {
@@ -50,58 +48,57 @@ function filterFunction(value) {
 /*Test*/
 
 assert(function () {
-    return Optional.of(subject.field1).orElse("alternative") == "value";
+    return Optional.of(defined).orElse("alternative") == "value";
 });
 assert(function () {
-    return Optional.of(subject.field2).orElse("alternative") == "alternative";
+    return Optional.of(undefined).orElse("alternative") == "alternative";
 });
 assert(function () {
-    return Optional.of(subject.field1).isPresent();
+    return Optional.of(defined).isPresent();
 });
 assert(function () {
-    return !Optional.of(subject.field2).isPresent();
+    return !Optional.of(undefined).isPresent();
 });
 assert(function () {
-    return Optional.of(subject.field1).map(mapFunction).get() == "mapped";
+    return Optional.of(defined).map(mapFunction).get() == "mapped";
 });
 assert(function () {
     return Optional.of("other").map(mapFunction).get() == "notMapped";
 });
 assert(function () {
-    return Optional.of(subject.field2).map(mapFunction) == Optional.empty();
+    return Optional.of(undefined).map(mapFunction) == Optional.empty();
 });
 assert(function () {
-    return Optional.of(subject.field1).flatMap(flatMapFunction) == "mapped";
+    return Optional.of(defined).flatMap(flatMapFunction) == "mapped";
 });
 assert(function () {
     return Optional.of("other").flatMap(flatMapFunction) == "notMapped";
 });
 assert(function () {
-    return Optional.of(subject.field2).flatMap(flatMapFunction) == "notMapped";
+    return Optional.of(undefined).flatMap(flatMapFunction) == "notMapped";
 });
 assert(function () {
-    return Optional.of(subject.field1).filter(filterFunction).get() == subject.field1;
+    return Optional.of(defined).filter(filterFunction).get() == defined;
 });
 assert(function () {
     return Optional.of("other").filter(filterFunction) == Optional.empty();
 });
 assert(function () {
-    var opt = Optional.of(subject.field2);
+    var opt = Optional.of(undefined);
     return opt.filter(filterFunction) == opt;
 });
 assert(function () {
     var present = "notPresent";
-    Optional.of(subject.field1).ifPresent(function () {
+    Optional.of(defined).ifPresent(function () {
         present = "isPresent";
     });
     return present == "isPresent";
 });
 assert(function () {
     var present = "notPresent";
-    Optional.of(subject.field2).ifPresent(function () {
+    Optional.of(undefined).ifPresent(function () {
         present = "isPresent";
     });
     return present == "notPresent";
 });
 print("Test sucessful");
-
