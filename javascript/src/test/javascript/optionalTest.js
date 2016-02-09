@@ -43,6 +43,7 @@ function filterFunction(value) {
     if (value === "value") {
         return true;
     }
+    return false;
 }
 
 /*Test*/
